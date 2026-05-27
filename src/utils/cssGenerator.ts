@@ -1,16 +1,5 @@
 import { SuperellipseState } from '../hooks/useSuperellipse';
-
-// Helper to convert hex to rgb for opacity handling if needed
-const hexToRgb = (hex: string) => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ?
-  {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } :
-  null;
-};
+import { hexToRgb } from './colorUtils';
 
 // Generate SVG Path for Superellipse (Squircle)
 const getSuperellipsePath = (

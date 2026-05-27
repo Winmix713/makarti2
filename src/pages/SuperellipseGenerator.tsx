@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { PreviewArea } from '../components/PreviewArea';
 import { ControlPanel } from '../components/ControlPanel';
 import { LiveCodePanel } from '../components/panels/LiveCodePanel';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSuperellipse, SuperellipseState } from '../hooks/useSuperellipse';
 import { useTheme } from '../hooks/useTheme';
 import { useLayerManager } from '../hooks/useLayerManager';
@@ -22,11 +23,7 @@ export function SuperellipseGenerator() {
   // Load state from preset
   const loadState = useCallback(
     (newState: SuperellipseState) => {
-      Object.keys(newState).forEach((key) => {
-        updateState({
-          [key]: newState[key as keyof SuperellipseState]
-        });
-      });
+      updateState(newState);
     },
     [updateState]
   );
@@ -74,21 +71,23 @@ export function SuperellipseGenerator() {
     <div className="h-screen flex flex-col overflow-hidden bg-background text-foreground">
       {/* Main Content */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        <PreviewArea
-          state={state}
-          updateState={updateState}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          projectName={projectManager.currentProject?.name}
-          canUndo={undoRedo.canUndo}
-          canRedo={undoRedo.canRedo}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
-          onSave={handleSave}
-          resetState={resetState} />
-        
+        <ErrorBoundary name="PreviewArea">
+          <PreviewArea
+            state={state}
+            updateState={updateState}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            projectName={projectManager.currentProject?.name}
+            canUndo={undoRedo.canUndo}
+            canRedo={undoRedo.canRedo}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            onSave={handleSave}
+            resetState={resetState} />
+        </ErrorBoundary>
 
-        <ControlPanel
+        <ErrorBoundary name="ControlPanel">
+          <ControlPanel
           state={state}
           updateState={updateState}
           updateGradientStop={updateGradientStop}
@@ -127,10 +126,10 @@ export function SuperellipseGenerator() {
           onLoadProject={projectManager.loadProject}
           onDeleteProject={projectManager.deleteProject}
           onExportProject={projectManager.exportProject}
-          onImportProject={handleImportProject}
-          onUpdateMetadata={projectManager.updateProjectMetadata}
-          onUpdateCanvas={projectManager.updateCanvasSettings} />
-        
+            onImportProject={handleImportProject}
+            onUpdateMetadata={projectManager.updateProjectMetadata}
+            onUpdateCanvas={projectManager.updateCanvasSettings} />
+        </ErrorBoundary>
       </div>
 
       {/* Code Panel Toggle */}

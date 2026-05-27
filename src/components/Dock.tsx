@@ -66,8 +66,6 @@ const EFFECT_PRESETS: EffectPreset[] = [
     borderEnabled: false,
     noiseEnabled: false,
     blur: 0,
-    shadowDistance: 15,
-    shadowIntensity: 40
   }
 },
 {
