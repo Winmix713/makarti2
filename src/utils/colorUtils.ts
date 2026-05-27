@@ -123,3 +123,25 @@ export function isInGamut(l: number, c: number, h: number): boolean {
   const rgb = oklchToRgb(l, c, h);
   return rgb.r >= 0 && rgb.r <= 255 && rgb.g >= 0 && rgb.g <= 255 && rgb.b >= 0 && rgb.b <= 255;
 }
+
+export function generateRandomGlow(): {
+  glowColor: string;
+  lightness: number;
+  glowPositionX: number;
+  glowPositionY: number;
+  glowScale: number;
+} {
+  const randomL = 0.6 + Math.random() * 0.3;
+  const randomC = 0.15 + Math.random() * 0.2;
+  const randomH = Math.random() * 360;
+
+  const hex = oklchToHex(randomL, randomC, randomH);
+
+  return {
+    glowColor: hex,
+    lightness: Math.round(randomL * 100),
+    glowPositionX: (Math.random() - 0.5) * 2000,
+    glowPositionY: (Math.random() - 0.5) * 2000,
+    glowScale: 0.5 + Math.random() * 1.5,
+  };
+}

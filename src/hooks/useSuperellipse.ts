@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { oklchToHex } from '../utils/colorUtils';
+import { useState, useEffect, useRef } from 'react';
+import { generateRandomGlow } from '../utils/colorUtils';
+
+const STORAGE_KEY = 'superellipse-state';
 
 export type GradientStop = {
   color: string;
@@ -81,7 +83,32 @@ const DEFAULT_STATE: SuperellipseState = {
 };
 
 export function useSuperellipse() {
-  const [state, setState] = useState<SuperellipseState>(DEFAULT_STATE);
+  const [state, setState] = useState<SuperellipseState>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : DEFAULT_STATE;
+    } catch {
+      return DEFAULT_STATE;
+    }
+  });
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    saveTimeoutRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Failed to save state to localStorage:', e);
+      }
+    }, 500);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [state]);
 
   const updateState = (updates: Partial<SuperellipseState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -101,20 +128,10 @@ export function useSuperellipse() {
   };
 
   const randomizeGlow = () => {
-    // Generate random OKLCH values for vibrant colors
-    const randomL = 0.6 + Math.random() * 0.3; // 0.6-0.9 lightness
-    const randomC = 0.15 + Math.random() * 0.2; // 0.15-0.35 chroma (vibrant)
-    const randomH = Math.random() * 360; // full hue range
-
-    const hex = oklchToHex(randomL, randomC, randomH);
-
+    const glowData = generateRandomGlow();
     updateState({
-      lightness: Math.round(randomL * 100),
-      glowColor: hex,
-      solidColor: hex,
-      glowPositionX: -800 + Math.random() * 450,
-      glowPositionY: -1400 + Math.random() * 800,
-      glowScale: 0.7 + Math.random() * 2.3
+      ...glowData,
+      solidColor: glowData.glowColor,
     });
   };
 
