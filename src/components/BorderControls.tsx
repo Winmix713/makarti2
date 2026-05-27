@@ -169,32 +169,6 @@ export function BorderControls({ state, updateState }: BorderControlsProps) {
           Shadow
         </p>
 
-        <CustomSlider
-          label="Shadow Distance"
-          value={state.shadowDistance}
-          min={0}
-          max={50}
-          step={1}
-          onChange={(val) =>
-          updateState({
-            shadowDistance: val
-          })
-          }
-          unit="px" />
-        
-
-        <CustomSlider
-          label="Shadow Intensity"
-          value={state.shadowIntensity}
-          min={0}
-          max={100}
-          step={1}
-          onChange={(val) =>
-          updateState({
-            shadowIntensity: val
-          })
-          }
-          unit="%" />
         
       </div>
 

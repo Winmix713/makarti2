@@ -1,4 +1,5 @@
 import { SuperellipseState } from '../hooks/useSuperellipse';
+import { generateSuperellipsePath } from './shapes';
 
 export function generateSVG(state: SuperellipseState): string {
   const {
@@ -63,26 +64,8 @@ export function generateSVG(state: SuperellipseState): string {
   let pathData = '';
 
   if (smoothing > 0) {
-    const n = 2 + smoothing * 10;
-    const a = width / 2;
-    const b = height / 2;
-    const steps = 360;
-    const points: string[] = [];
-
-    for (let i = 0; i <= steps; i++) {
-      const theta = i / steps * 2 * Math.PI;
-      const cosTheta = Math.cos(theta);
-      const sinTheta = Math.sin(theta);
-      const x =
-      Math.pow(Math.abs(cosTheta), 2 / n) * a * Math.sign(cosTheta) + a;
-      const y =
-      Math.pow(Math.abs(sinTheta), 2 / n) * b * Math.sign(sinTheta) + b;
-      points.push(`${x.toFixed(2)},${y.toFixed(2)}`);
-    }
-
-    pathData = `M ${points.join(' L ')} Z`;
+    pathData = generateSuperellipsePath(width, height, smoothing);
   } else {
-    // Use rounded rectangle
     const r = Math.min(radius, width / 2, height / 2);
     pathData = `
       M ${r},0
